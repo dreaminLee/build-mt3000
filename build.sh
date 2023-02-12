@@ -5,7 +5,7 @@ export http_proxy="http://10.0.2.2:10811"
 export https_proxy="http://10.0.2.2:10811"
 # used in docker
 # export http_proxy="http://host.docker.internal:10811"
-# export https_proxy"http://host.docker.internal:10811"
+# export https_proxy="http://host.docker.internal:10811"
 
 glinet_builder_uri='https://github.com/gl-inet/gl-infra-builder.git'
 glinet_feeds_uri='https://github.com/gl-inet/gl-feeds.git'
@@ -19,15 +19,20 @@ openwrt_telephony_uri='https://git.openwrt.org/feed/telephony.git'
 mtk_openwrt_feeds_uri='https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds.git'
 
 base=$1
-cd base
+if [ -z $base ]
+then
+    echo "provide a path for build root!"
+    exit 1
+fi
+cd $base
 
-mkdir mt3000
+mkdir -p mt3000
 cd mt3000
 build_root=$(pwd)
 
-mkdir glinet
-mkdir openwrt
-mkdir mtk
+mkdir -p glinet
+mkdir -p openwrt
+mkdir -p mtk
 
 # download all sources
 echo "----------------------Cloning sources----------------------"
@@ -81,7 +86,7 @@ feeds_default='feeds.conf.default'
 sed -i "s|${openwrt_packages_uri}|${build_root}/openwrt/packages|" $feeds_default
 sed -i "s|${openwrt_luci_uri}|${build_root}/openwrt/luci|" $feeds_default
 sed -i "s|${openwrt_routing_uri}|${build_root}/openwrt/routing|" $feeds_default
-sed -i "s|${openwrt_telephony}|${build_root}/openwrt/telephony|" $feeds_default
+sed -i "s|${openwrt_telephony_uri}|${build_root}/openwrt/telephony|" $feeds_default
 sed -i "s|${mtk_openwrt_feeds_uri}|${build_root}/mtk/mtk-openwrt-feeds|" $feeds_default
 # change profile's url to local
 target_profile='target_mt7981_gl-mt3000.yml'
@@ -101,12 +106,9 @@ git checkout openwrt-22.03
 cd ~/openwrt
 cp -r $build_root/openwrt/packages/lang/golang feeds/packages/lang/golang
 ./scripts/feeds update -a && ./scripts/feeds install -a && make defconfig
-# add predownload sources here
-mkdir -p dl
-cd dl
-wget --no-check-certificate https://grail.cba.csuohio.edu/~somos/xxd-1.10.tar.gz
 cd ~/openwrt
 # make -j$(expr $(nproc) + 1)  V=s
+# TODO cache download
 make download -j1 V=s
 if [ $? -eq 0]
 then
@@ -114,6 +116,7 @@ then
 else
     echo "Download failed, exiting......"
     exit 1
+fi
 make -j$(expr $(nproc) + 1) V=s
 if [ $? -eq 0]
 then
@@ -122,3 +125,4 @@ then
 else
     echo "Build failed, exiting......"
     exit 1
+fi
