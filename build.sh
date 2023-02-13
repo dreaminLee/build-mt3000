@@ -110,7 +110,7 @@ cd ~/openwrt
 # make -j$(expr $(nproc) + 1)  V=s
 # TODO cache download
 make download -j1 V=s
-if [ $? -eq 0]
+if [ $? -eq 0 ]
 then
     echo "----------------------Download completed----------------------"
 else
@@ -118,7 +118,7 @@ else
     exit 1
 fi
 make -j$(expr $(nproc) + 1) V=s
-if [ $? -eq 0]
+if [ $? -eq 0 ]
 then
     echo "----------------------Build successed----------------------"
     exit 0
