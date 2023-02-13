@@ -69,12 +69,12 @@ cd $build_root
 cd glinet/gl-infra-builder
 # if git user email or user name is not set, set it
 git_user_email=$(git config --global user.email)
-if [ -z "$git_user_email"]
+if [ -z "$git_user_email" ]
 then
     git config --global user.email "build@build.com"
 fi
 git_user_name=$(git config --global user.name)
-if [ -z "$git_user_name"]
+if [ -z "$git_user_name" ]
 then
     git config --global user.name "build"
 fi
