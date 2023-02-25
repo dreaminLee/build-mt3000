@@ -23,7 +23,7 @@ test_or_clone () {
     cd $base
 }
 
-. global_vars
+. global_vars.sh
 test_or_clone $glinet_builder_path $glinet_builder_uri
 test_or_clone $glinet_feeds_path $glinet_feeds_uri
 test_or_clone $openwrt_openwrt_path $openwrt_openwrt_uri
@@ -74,7 +74,7 @@ sed -i "s|${glinet_feeds_uri}|${base}/${glinet_feeds_path}|g" ./profiles/$target
 echo "----------------------Building basic environment----------------------"
 mkdir -p dl
 cp -r -u -p $base/dl_cache/* ./dl
-make downlaod V=s
+make download V=s
 make tools/install -j$(expr $(nproc) + 1)
 make toolchain/install -j$(expr $(nproc) + 1)
 make target/linux/compile -j$(expr $(nproc) + 1)
